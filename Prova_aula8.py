@@ -30,70 +30,172 @@
 class Hotel:
     def __init__(self):
         self.hotel = 'TS Hotel'
-        
+        self.quartos = []  # Lista de quartos
+        self.funcionarios = []  # Lista de funcionários
+        self.reservas = []  # Lista de reservas
 
-class Funcionario(Hotel):
+    def cadastrar_funcionario(self, nome, funcao, salario):
+        funcionario = Funcionario(nome, funcao, salario)
+        self.funcionarios.append(funcionario)
+
+    def listar_funcionarios(self):
+        for funcionario in self.funcionarios:
+            print(f'{funcionario.nome} - {funcionario.funcao} - R${funcionario.salario}')
+
+    def adicionar_quarto(self, numero, diaria, status):
+        quarto = Quarto(numero, diaria, status)
+        self.quartos.append(quarto)
+
+    def listar_quartos(self):
+        for quarto in self.quartos:
+            print(quarto.mostrar_status())
+    
+    def listar_quartos_disponiveis(self):
+        quartos_disponiveis = [quarto for quarto in self.quartos if quarto.status == 'Disponível']
+        if not quartos_disponiveis:
+            print("Não há quartos disponíveis no momento.")
+            return
+        for quarto in quartos_disponiveis:
+            print(quarto.mostrar_status())
+
+
+class Funcionario:
     def __init__(self, nome, funcao, salario):
-        super().__init__()
         self.nome = nome
         self.funcao = funcao
         self.salario = salario
-    
-    def cadastrar(self):
-        nome = input('Qual o nome do funcionário: ')
-        funcao = input(f'Qual a função do funcionário {nome}: ')
-        salario = input(f'Qual o sálario do funcionário {nome}: ')
-        return Funcionario(nome , funcao , salario)
-        
-    
-class Reserva(Hotel):
-    def __init__(self, numero, diaria, hospede , num_diarias):
-        self.hospede = hospede
-        self.num_diarias = num_diarias
 
-class Quarto(Reserva):
+
+class Quarto:
     def __init__(self, numero, diaria, status):
-        super().__ininit__()
         self.numero = numero
         self.diaria = diaria
         self.status = status
-        
+
     def mostrar_status(self):
-        return f'Quarto {self.numero} - Status: {self.status}'
-    
+        return f'Quarto {self.numero} - Status: {self.status} - Diária: R${self.diaria}'
 
-    def reservar(self):      
-        hospede = input('Qual o nome do Hóspede: ')
-        num_diarias = int(input('Quantas diárias serão: '))
-        self.status = 'Ocupado'
-        return Reserva(self.numero,self.diaria,hospede,num_diarias)
-    def lista_quarto_disponível(lista_quarto):
-    lista_quarto_disponível = []
-    for i in lista_quarto:
-        if i.status == 'Disponível':
-            lista_quarto_disponível.append[i]
-    return lista_quarto_disponível
-    
-    
+    def reservar(self, hospede, num_diarias):
+        if self.status == 'Disponível':
+            self.status = 'Ocupado'
+            reserva = Reserva(self.numero, self.diaria, hospede, num_diarias)
+            return reserva
+        else:
+            print(f'O quarto {self.numero} não está disponível.')
+            return None
+
+
+class Reserva:
+    def __init__(self, numero_quarto, diaria, hospede, num_diarias):
+        self.numero_quarto = numero_quarto
+        self.diaria = diaria
+        self.hospede = hospede
+        self.num_diarias = num_diarias
+
+    def calcular_conta(self):
+        return self.diaria * self.num_diarias
+
+
+# Criando o hotel
+hotel = Hotel()
+
+# Adicionar quartos
+hotel.adicionar_quarto(101, 150, 'Disponível')
+hotel.adicionar_quarto(102, 150, 'Disponível')
+hotel.adicionar_quarto(103, 150, 'Disponível')
+hotel.adicionar_quarto(104, 150, 'Disponível')
+hotel.adicionar_quarto(105, 150, 'Disponível')
+
+
+# Menu
+while True:
+    print('====='*10)
+    print('\n\n')
+    print("Menu:\n")
+    print("[1] - Cadastrar Funcionário")
+    print("[2] - Listar Funcionários")
+    print("[3] - Listar Quartos Disponíveis")
+    print("[4] - Realizar Reserva")
+    print("[5] - Valor do Check-out")
+    print("[0] - Sair")
+    print('\n\n')
+    print('====='*10)
+    print('\n\n')
+    opcao = input("Escolha uma opção: ")
+
+    if opcao == '1':
+        print('\n\n')
+        nome = input('Qual o nome do funcionário: ')
+        funcao = input(f'Qual a função do funcionário {nome}: ')
+        salario = float(input(f'Qual o salário do funcionário {nome}: '))
+        hotel.cadastrar_funcionario(nome, funcao, salario)
+        print('\n\n')
+        continue
+
+    elif opcao == '2':
+        print('\n\n')
+        print("\nFuncionários:")
+        hotel.listar_funcionarios()
+        print('\n\n')
+        continue
+
+    elif opcao == '3':
+        print('\n\n')
+        print("\nQuartos disponíveis:")
+        hotel.listar_quartos_disponiveis()
+        print('\n\n')
+        continue
+
+    elif opcao == '4':
+        print('\n\n')
+        numero_quarto = int(input("\nDigite o número do quarto que deseja reservar: "))
+        hospede = input("Qual o nome do hóspede: ")
+        num_diarias = int(input("Quantas diárias? "))
+        print('\n\n')
+        quarto_reservado = None
+        for quarto in hotel.quartos:
+            if quarto.numero == numero_quarto:
+                quarto_reservado = quarto
+                reserva = quarto.reservar(hospede, num_diarias)
+                if reserva:
+                    hotel.reservas.append(reserva)
+                    print(f'Reserva realizada para {hospede} no quarto {quarto.numero}.')
+                    print(f'Valor total da reserva: R${reserva.calcular_conta()}')
+                break
         
-quarto_101 = Quarto(101 , 150 , 'Disponível')
-quarto_102 = Quarto(102 , 150 , 'Disponível')
-quarto_103 = Quarto(103 , 150 , 'Disponível')
-quarto_104 = Quarto(104 , 150 , 'Disponível')
-quarto_105 = Quarto(105 , 150 , 'Disponível')
-quarto_201 = Quarto(201 , 250 , 'Disponível')
-quarto_202 = Quarto(202 , 250 , 'Disponível')
-quarto_203 = Quarto(203 , 250 , 'Disponível')
-quarto_204 = Quarto(204 , 250 , 'Disponível')
-quarto_205 = Quarto(205 , 250 , 'Disponível')
+        if not quarto_reservado:
+            print("Quarto não encontrado ou não disponível.")
+        print('\n\n')
+        continue
 
-lista_quarto = [quarto_101 , quarto_102 , quarto_103 , quarto_104 , quarto_105 , quarto_201 , quarto_202 , quarto_203 , quarto_204 , quarto_205]
+    elif opcao == '5':
+        print('\n\n')
+        hospede = input("Digite o nome do hóspede para o check-out: ")
+        print('\n\n')
+        reserva_encontrada = None
+        for reserva in hotel.reservas:
+            if reserva.hospede.lower() == hospede.lower():
+                reserva_encontrada = reserva
+                print(f'Nome do hóspede: {reserva.hospede}')
+                print(f'Número do quarto: {reserva.numero_quarto}')
+                print(f'Diárias: {reserva.num_diarias}')
+                print(f'Valor a ser pago: R${reserva.calcular_conta()}')
+                break
+        
+        if not reserva_encontrada:
+            print("Reserva não encontrada para esse hóspede.")
+            print('\n\n')
+            continue
 
+    elif opcao == '0':
+        print('\n\n')
+        print("Saindo do sistema...")
+        print('\n\n')
+        print('====='*10)
+        break
 
-
-
-
-
-
-
-
+    else:
+        print('\n\n')
+        print("Opção inválida! Tente novamente.")
+        print('\n\n')
+        continue
